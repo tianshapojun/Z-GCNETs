@@ -127,7 +127,7 @@ def zigzag_persistence_diagrams(dataset, PEMS_net_dataset, index, alpha, NVertic
 
     GVRips = []
     for jj in range(0, sizeWindow - 1):
-        print(jj)
+        #print(jj)
         ripsAux = d.fill_rips(MDisGUnions[jj], maxDimHoles, scaleParameter)
         GVRips.append(ripsAux)
     #print("  --- End Vietoris-Rips computation")  # Ending
@@ -139,7 +139,7 @@ def zigzag_persistence_diagrams(dataset, PEMS_net_dataset, index, alpha, NVertic
     for kk in range(1, sizeWindow - 1):
         shiftAux = zzt.shift_filtration(GVRips[kk], NVertices * kk)
         GVRips_shift.append(shiftAux)
-    print("  --- End shifting...")  # Ending
+    #print("  --- End shifting...")  # Ending
 
     # To Combine complexes
     #print("Combining complexes...")  # Beginning
@@ -352,7 +352,7 @@ def zigzag_persistence_images(dgms, resolution = [50,50], return_raw = False, no
 
     return norm_output
 
-def get_zpi(dataset,train,val):
+def get_zpi(dataset, train, val, horizon = 12, window = 12):
     train_data, val_data, test_data = load_st_fulldataset(dataset=dataset, val_ratio = 0.2, test_ratio = 0.2)
     if train:
         data = train_data
@@ -365,10 +365,10 @@ def get_zpi(dataset,train,val):
         pass
     else:
         PEMS_net_dataset = pd.read_csv(path + '/data/PEMS0' + str(dataset)[5] + '/distance.csv', header=0)
-    result = np.zeros((data.shape[0],100,100))
+    result = np.zeros((data.shape[0] - horizon - window + 1,100,100))
     for i in tqdm(range(result.shape[0])):
-        dgms = zigzag_persistence_diagrams(data,PEMS_net_dataset,i,alpha, data.shape[2], scaleParameter, maxDimHoles, sizeWindow)
-        out = zpd.zigzag_persistence_images(dgms,resolution=[100,100],dimensional=1,normalization=True)
+        dgms = zigzag_persistence_diagrams(data,PEMS_net_dataset,i,alpha, data.shape[1], scaleParameter, maxDimHoles, sizeWindow)
+        out = zigzag_persistence_images(dgms,resolution=[100,100],dimensional=1,normalization=True)
         result[i] = out
     return result
 
