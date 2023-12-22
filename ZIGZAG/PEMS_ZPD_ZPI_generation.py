@@ -79,7 +79,7 @@ def zigzag_persistence_diagrams(dataset, PEMS_net_dataset, index, alpha, NVertic
     for i in range(0, sizeWindow):
         edgesList = PEMS_networks[i, :, :]
         Graphs.append(edgesList)
-    print("  --- End Loading...")  # Ending
+    #print("  --- End Loading...")  # Ending
 
     # Generate Graph
     GraphsNetX = []
@@ -94,7 +94,7 @@ def zigzag_persistence_diagrams(dataset, PEMS_net_dataset, index, alpha, NVertic
         GraphsNetX.append(g)
 
     # Building unions and computing distance matrices
-    print("Building unions and computing distance matrices...")  # Beginning
+    #print("Building unions and computing distance matrices...")  # Beginning
     GUnions = []
     MDisGUnions = []
     for i in range(0, sizeWindow - 1):
@@ -120,20 +120,20 @@ def zigzag_persistence_diagrams(dataset, PEMS_net_dataset, index, alpha, NVertic
         # --- To save unions and distances
         GUnions.append(unionAux)  # To save union
         MDisGUnions.append(pDisAux)  # To save distance matrix
-    print("  --- End unions...")  # Ending
+    #print("  --- End unions...")  # Ending
 
     # To perform Ripser computations
-    print("Computing Vietoris-Rips complexes...")  # Beginning
+    #print("Computing Vietoris-Rips complexes...")  # Beginning
 
     GVRips = []
     for jj in range(0, sizeWindow - 1):
         print(jj)
         ripsAux = d.fill_rips(MDisGUnions[jj], maxDimHoles, scaleParameter)
         GVRips.append(ripsAux)
-    print("  --- End Vietoris-Rips computation")  # Ending
+    #print("  --- End Vietoris-Rips computation")  # Ending
 
     # Shifting filtrations...
-    print("Shifting filtrations...")  # Beginning
+    #print("Shifting filtrations...")  # Beginning
     GVRips_shift = []
     GVRips_shift.append(GVRips[0])  # Shift 0... original rips01
     for kk in range(1, sizeWindow - 1):
@@ -142,27 +142,27 @@ def zigzag_persistence_diagrams(dataset, PEMS_net_dataset, index, alpha, NVertic
     print("  --- End shifting...")  # Ending
 
     # To Combine complexes
-    print("Combining complexes...")  # Beginning
+    #print("Combining complexes...")  # Beginning
     completeGVRips = zzt.complex_union(GVRips[0], GVRips_shift[1])
     for uu in range(2, sizeWindow - 1):
         completeGVRips = zzt.complex_union(completeGVRips, GVRips_shift[uu])
-    print("  --- End combining")  # Ending
+    #print("  --- End combining")  # Ending
 
     # To compute the time intervals of simplices
-    print("Determining time intervals...")  # Beginning
+    #print("Determining time intervals...")  # Beginning
     time_intervals = zzt.build_zigzag_times(completeGVRips, NVertices, sizeWindow)
-    print("  --- End time")  # Beginning
+    #print("  --- End time")  # Beginning
 
     # To compute Zigzag persistence
-    print("Computing Zigzag homology...")  # Beginning
+    #print("Computing Zigzag homology...")  # Beginning
     G_zz, G_dgms, G_cells = d.zigzag_homology_persistence(completeGVRips, time_intervals)
-    print("  --- End Zigzag")  # Beginning
+    #print("  --- End Zigzag")  # Beginning
 
     # To show persistence intervals
     window_ZPD = []
     # Personalized plot
     for vv, dgm in enumerate(G_dgms):
-        print("Dimension:", vv)
+        #print("Dimension:", vv)
         if (vv < 2):
             matBarcode = np.zeros((len(dgm), 2))
             k = 0
@@ -174,8 +174,8 @@ def zigzag_persistence_diagrams(dataset, PEMS_net_dataset, index, alpha, NVertic
             window_ZPD.append(matBarcode)
 
     # Timing
-    print("TIME: " + str((time.time() - start_time)) + " Seg ---  " + str(
-        (time.time() - start_time) / 60) + " Min ---  " + str((time.time() - start_time) / (60 * 60)) + " Hr ")
+    #print("TIME: " + str((time.time() - start_time)) + " Seg ---  " + str(
+        #(time.time() - start_time) / 60) + " Min ---  " + str((time.time() - start_time) / (60 * 60)) + " Hr ")
 
     return window_ZPD
 
@@ -372,7 +372,7 @@ def get_zpi(dataset,train,val):
         result[i] = out
     return result
 
-if __name__=="_main_": 
+if __name__=="__main__": 
     dataset = 'PEMSD4'
     zpi_train = get_zpi(dataset, train = True, val = False)
     #zpi_val = get_zpi(dataset, train = False, val = True)
