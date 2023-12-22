@@ -7,9 +7,11 @@ from scipy.spatial.distance import squareform
 import dionysus as d
 import matplotlib.pyplot as plt
 import time
-from ripser import ripser
-from persim import plot_diagrams, PersImage
+#from ripser import ripser
+#from persim import plot_diagrams, PersImage
 path = os.getcwd()
+path = os.path.dirname(path)
+path = os.path.join(path+'/model')
 
 def split_data_by_ratio(data, val_ratio, test_ratio):
     data_len = data.shape[0]
@@ -44,7 +46,7 @@ maxDimHoles = 2 # Maximum Dimension of Holes (It means.. 0 and 1)
 sizeWindow = 12 # Number of Graphs
 
 # Zigzag persistence diagram (ZPD) for the regular sliding window
-def zigzag_persistence_diagrams(dataset, index, alpha, NVertices, scaleParameter, maxDimHoles, sizeWindow, train = True, val = False, val_ratio = None, test_ratio = None):
+def zigzag_persistence_diagrams(dataset, index, alpha, NVertices, scaleParameter, maxDimHoles, sizeWindow, train = True, val = False, val_ratio = 0.2, test_ratio = 0.2):
     train_data, val_data, test_data = load_st_fulldataset(dataset=dataset, val_ratio = val_ratio, test_ratio = test_ratio)
     if train:
         PEMS_features = train_data
