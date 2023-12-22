@@ -31,6 +31,10 @@ def load_st_fulldataset(dataset, val_ratio, test_ratio):
         data_path = os.path.join(path + '/data/PEMS08/PEMS08.npz')
         data = np.load(data_path)['data'][:, :, 0:4]  #three dimensions, traffic flow data
         data_train, data_val, data_test = split_data_by_ratio(data, val_ratio, test_ratio)
+    elif dataset == 'Genearated': 
+        data_path = os.path.join(path + '/data/Macro/samples.npy')
+        data = np.load(data_path)[:,:,0:1]
+        data_train, data_val, data_test = split_data_by_ratio(data, val_ratio, test_ratio)
     else:
         raise ValueError
     if len(data.shape) == 2:
@@ -47,10 +51,8 @@ maxDimHoles = 2 # Maximum Dimension of Holes (It means.. 0 and 1)
 sizeWindow = 12 # Number of Graphs
 
 # Zigzag persistence diagram (ZPD) for the regular sliding window
-def zigzag_persistence_diagrams(dataset, PEMS_net_dataset, index, alpha, NVertices, scaleParameter, maxDimHoles, sizeWindow, val_ratio = 0.2, test_ratio = 0.2):
+def zigzag_persistence_diagrams(dataset, PEMS_net_edgelist, index, alpha, NVertices, scaleParameter, maxDimHoles, sizeWindow, val_ratio = 0.2, test_ratio = 0.2):
     PEMS_features = dataset
-    PEMS_net_edges = PEMS_net_dataset.values[:, 0:2]
-    PEMS_net_edgelist = [(int(u), int(v)) for u, v in PEMS_net_edges]
     PEMS_net = nx.Graph()
     PEMS_net.add_edges_from(PEMS_net_edgelist)
 
@@ -361,13 +363,22 @@ def get_zpi(dataset, train, val, horizon = 12, window = 12):
     else:
         data = test_data
         
-    if dataset == 'new':
-        pass
+    if dataset == 'new':        
+        PEMS_net_dataset = np.load(os.path.join(path + '/data/Macro/dis_mat_mod.dat'),allow_pickle=True)
+        PEMS_net_edgelist = []
+        thrd = np.percentile(PEMS_net_dataset,0.05)
+        for i in range(PEMS_net_dataset.shape[0]):
+            for j in range(i+1, PEMS_net_dataset.shape[1]):
+                if PEMS_net_dataset[i,j] < thrd
+                    PEMS_net_edgelist.append((i,j))
+                    PEMS_net_edgelist.append((j,i))
     else:
         PEMS_net_dataset = pd.read_csv(path + '/data/PEMS0' + str(dataset)[5] + '/distance.csv', header=0)
+        PEMS_net_edges = PEMS_net_dataset.values[:, 0:2]
+        PEMS_net_edgelist = [(int(u), int(v)) for u, v in PEMS_net_edges]
     result = np.zeros((data.shape[0] - horizon - window + 1,100,100))
     for i in tqdm(range(result.shape[0])):
-        dgms = zigzag_persistence_diagrams(data,PEMS_net_dataset,i,alpha, data.shape[1], scaleParameter, maxDimHoles, sizeWindow)
+        dgms = zigzag_persistence_diagrams(data,PEMS_net_edgelist,i,alpha, data.shape[1], scaleParameter, maxDimHoles, sizeWindow)
         out = zigzag_persistence_images(dgms,resolution=[100,100],dimensional=1,normalization=True)
         result[i] = out
     return result
@@ -377,3 +388,4 @@ if __name__=="__main__":
     zpi_train = get_zpi(dataset, train = True, val = False)
     #zpi_val = get_zpi(dataset, train = False, val = True)
     #zpi_test = get_zpi(dataset, train = False, val = False)
+    np.savez("/content/gdrive/MyDrive/Models/Z-GCNET/train.npz", zpi_train)
