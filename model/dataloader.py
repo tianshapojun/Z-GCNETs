@@ -155,19 +155,19 @@ def get_topo_dataloader(args, data_type, H_type, normalizer = 'std', tod=False, 
 
     return train_dataloader, val_dataloader, test_dataloader, scaler
 
-
-import argparse
-DATASET = 'PEMSD4'
-NODE_NUM = 307
-parser = argparse.ArgumentParser(description='PyTorch dataloader')
-parser.add_argument('--dataset', default=DATASET, type=str)
-parser.add_argument('--num_nodes', default=NODE_NUM, type=int)
-parser.add_argument('--val_ratio', default=0.1, type=float)
-parser.add_argument('--test_ratio', default=0.2, type=float)
-parser.add_argument('--lag', default=12, type=int)
-parser.add_argument('--horizon', default=12, type=int)
-parser.add_argument('--batch_size', default=64, type=int)
-parser.add_argument('--column_wise', default=False, type=bool)
-args = parser.parse_args()
-
-train_dataloader, val_dataloader, test_dataloader, scaler = get_dataloader(args, normalizer = 'std', tod=False, dow=False, weather=False, single=False)
+if __name__=='__main__':
+    import argparse
+    DATASET = 'PEMSD4'
+    NODE_NUM = 307
+    parser = argparse.ArgumentParser(description='PyTorch dataloader')
+    parser.add_argument('--dataset', default=DATASET, type=str)
+    parser.add_argument('--num_nodes', default=NODE_NUM, type=int)
+    parser.add_argument('--val_ratio', default=0.1, type=float)
+    parser.add_argument('--test_ratio', default=0.2, type=float)
+    parser.add_argument('--lag', default=12, type=int)
+    parser.add_argument('--horizon', default=12, type=int)
+    parser.add_argument('--batch_size', default=64, type=int)
+    parser.add_argument('--column_wise', default=False, type=bool)
+    args = parser.parse_args()
+    
+    train_dataloader, val_dataloader, test_dataloader, scaler = get_dataloader(args, normalizer = 'std', tod=False, dow=False, weather=False, single=False)
