@@ -7,6 +7,7 @@ from scipy.spatial.distance import squareform
 import dionysus as d
 import matplotlib.pyplot as plt
 import time
+from tqdm import tqdm
 #from ripser import ripser
 #from persim import plot_diagrams, PersImage
 path = os.getcwd()
@@ -46,15 +47,8 @@ maxDimHoles = 2 # Maximum Dimension of Holes (It means.. 0 and 1)
 sizeWindow = 12 # Number of Graphs
 
 # Zigzag persistence diagram (ZPD) for the regular sliding window
-def zigzag_persistence_diagrams(dataset, index, alpha, NVertices, scaleParameter, maxDimHoles, sizeWindow, train = True, val = False, val_ratio = 0.2, test_ratio = 0.2):
-    train_data, val_data, test_data = load_st_fulldataset(dataset=dataset, val_ratio = val_ratio, test_ratio = test_ratio)
-    if train:
-        PEMS_features = train_data
-    elif val:
-        PEMS_features = val_data
-    else:
-        PEMS_features = test_data
-    PEMS_net_dataset = pd.read_csv(path + '/data/PEMS0' + str(dataset)[5] + '/distance.csv', header=0)
+def zigzag_persistence_diagrams(dataset, PEMS_net_dataset, index, alpha, NVertices, scaleParameter, maxDimHoles, sizeWindow, val_ratio = 0.2, test_ratio = 0.2):
+    PEMS_features = dataset
     PEMS_net_edges = PEMS_net_dataset.values[:, 0:2]
     PEMS_net_edgelist = [(int(u), int(v)) for u, v in PEMS_net_edges]
     PEMS_net = nx.Graph()
@@ -357,3 +351,29 @@ def zigzag_persistence_images(dgms, resolution = [50,50], return_raw = False, no
         norm_output = output
 
     return norm_output
+
+def get_zpi(dataset,train,val):
+    train_data, val_data, test_data = load_st_fulldataset(dataset=dataset, val_ratio = 0.2, test_ratio = 0.2)
+    if train:
+        data = train_data
+    elif val:
+        data = val_data
+    else:
+        data = test_data
+        
+    if dataset == 'new':
+        pass
+    else:
+        PEMS_net_dataset = pd.read_csv(path + '/data/PEMS0' + str(dataset)[5] + '/distance.csv', header=0)
+    result = np.zeros((data.shape[0],100,100))
+    for i in tqdm(range(result.shape[0])):
+        dgms = zigzag_persistence_diagrams(data,PEMS_net_dataset,i,alpha, data.shape[2], scaleParameter, maxDimHoles, sizeWindow)
+        out = zpd.zigzag_persistence_images(dgms,resolution=[100,100],dimensional=1,normalization=True)
+        result[i] = out
+    return result
+
+if __name__=="_main_": 
+    dataset = 'PEMSD4'
+    zpi_train = get_zpi(dataset, train = True, val = False)
+    #zpi_val = get_zpi(dataset, train = False, val = True)
+    #zpi_test = get_zpi(dataset, train = False, val = False)
