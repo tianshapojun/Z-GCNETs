@@ -348,7 +348,7 @@ def zigzag_persistence_images(dgms, resolution = [50,50], return_raw = False, no
     output = [lw, lsum] if return_raw else Zfinal
 
     if normalization:
-        norm_output = (output - np.min(output))/(np.max(output) - np.min(output))
+        norm_output = (output - np.min(output))/(np.max(output) - np.min(output) + 1e-5)
     else:
         norm_output = output
 
@@ -366,10 +366,10 @@ def get_zpi(dataset, train, val, horizon = 12, window = 12):
     if dataset == 'new':        
         PEMS_net_dataset = np.load(os.path.join(path + '/data/Macro/dis_mat_mod.dat'),allow_pickle=True)
         PEMS_net_edgelist = []
-        thrd = np.percentile(PEMS_net_dataset,0.05)
+        thrd = np.percentile(PEMS_net_dataset,7.5)
         for i in range(PEMS_net_dataset.shape[0]):
             for j in range(i+1, PEMS_net_dataset.shape[1]):
-                if PEMS_net_dataset[i,j] < thrd
+                if PEMS_net_dataset[i,j] < thrd:
                     PEMS_net_edgelist.append((i,j))
                     PEMS_net_edgelist.append((j,i))
     else:
